@@ -4,7 +4,7 @@ namespace joint_motor_driver
 {
 
 JointMotorDriverNode::JointMotorDriverNode(const rclcpp::NodeOptions& options, uint8_t can_id)
-: Node("joint_motor_driver_node", options),
+: Node("joint_motor_driver_node", options)
 {
   if (can_id > 0x7F)
   {
