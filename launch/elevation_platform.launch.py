@@ -36,13 +36,12 @@ def generate_launch_description():
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_params_file_cmd)
 
-    # def prepare_multiple_nodes(context, *args, **kwargs):
     for i in range(0, int(NUM_OF_JOINT_MOTOR)):
         node = Node(
             package=pkg_name,
             namespace=f"elevation_joint_{i+1}",
             executable="joint_motor_driver_node",
-            name="joint_motor_driver_node",
+            # name="joint_motor_driver_node",
             parameters=[
                 params_file,
             ],
@@ -51,7 +50,5 @@ def generate_launch_description():
             output="screen",
         )
         ld.add_action(node)
-
-    # ld.add_action(OpaqueFunction(function=prepare_multiple_nodes, args=[ld]))
 
     return ld

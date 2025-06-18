@@ -1,6 +1,8 @@
 #ifndef ELEVATION_PLATFORM_NODE_HPP_
 #define ELEVATION_PLATFORM_NODE_HPP_
 
+#pragma once
+
 #include <functional>
 #include <future>
 #include <memory>

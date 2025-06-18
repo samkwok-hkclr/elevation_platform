@@ -20,6 +20,8 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(can_msgs REQUIRED)
 
+find_package(elevation_platform_msgs REQUIRED)
+
 add_executable(elevation_platform_node 
   src/elevation_platform_node.cpp
 )
@@ -30,6 +32,8 @@ target_include_directories(elevation_platform_node PUBLIC
 ament_target_dependencies(elevation_platform_node
   rclcpp
   can_msgs
+
+  elevation_platform_msgs
 )
 target_compile_features(elevation_platform_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
@@ -43,38 +47,16 @@ target_include_directories(joint_motor_driver_node PUBLIC
 ament_target_dependencies(joint_motor_driver_node
   rclcpp
   can_msgs
+
+  elevation_platform_msgs
 )
 target_compile_features(joint_motor_driver_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-
-# add_library(joint_motor_driver_node SHARED
-#   src/joint_motor_driver_node.cpp
-# )
-# target_include_directories(joint_motor_driver_node PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#   $<INSTALL_INTERFACE:include>
-# )
-# target_compile_definitions(joint_motor_driver_node
-#   PRIVATE "JOINT_MOTOR_DRIVER_NODE_BUILDING_DLL")
-# ament_target_dependencies(joint_motor_driver_node
-#   rclcpp
-#   rclcpp_components
-#   can_msgs
-# )
-# rclcpp_components_register_nodes(joint_motor_driver_node "joint_motor_driver::JointMotorDriverNode")
-# target_compile_features(joint_motor_driver_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 install(TARGETS 
   elevation_platform_node
   joint_motor_driver_node
   DESTINATION lib/${PROJECT_NAME}
 )
-
-# install(TARGETS
-#   joint_motor_driver_node
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib
-#   RUNTIME DESTINATION bin
-# )
 
 install(DIRECTORY
   launch
