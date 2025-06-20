@@ -6,18 +6,50 @@ elevation_platform_node:
   ros__parameters:
     can_id: 0x60
     gear_ratio: 101.0
+    position_shift: 0x0
+
+    max_current: 5000 # mA FIXME
+    min_current: 5000 # mA FIXME
+    max_forward_acceleration: 5.0 # FIXME
+    max_backward_acceleration: 5.0 # FIXME
+    max_forward_velocity: 5.0 # FIXME
+    max_backward_velocity: 5.0 # FIXME
 
 /elevation_joint_2/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x61
     gear_ratio: 101.0
+    position_shift: 0x0
+
+    max_current: 5000 # mA FIXME
+    min_current: 5000 # mA FIXME
+    max_forward_acceleration: 5.0 # FIXME
+    max_backward_acceleration: 5.0 # FIXME
+    max_forward_velocity: 5.0 # FIXME
+    max_backward_velocity: 5.0 # FIXME
 
 /elevation_joint_3/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x62
     gear_ratio: 101.0
+    position_shift: 0x0
+
+    max_current: 5000 # mA FIXME
+    min_current: 5000 # mA FIXME
+    max_forward_acceleration: 5.0 # FIXME
+    max_backward_acceleration: 5.0 # FIXME
+    max_forward_velocity: 5.0 # FIXME
+    max_backward_velocity: 5.0 # FIXME
 
 /elevation_joint_4/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x63
-    gear_ratio: 0.0
+    gear_ratio: 88.0
+    position_shift: 0x0
+
+    max_current: 5000 # mA FIXME
+    min_current: 5000 # mA FIXME
+    max_forward_acceleration: 5.0 # FIXME
+    max_backward_acceleration: 5.0 # FIXME
+    max_forward_velocity: 5.0 # FIXME
+    max_backward_velocity: 5.0 # FIXME
