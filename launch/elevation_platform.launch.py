@@ -39,7 +39,7 @@ def generate_launch_description():
     for i in range(0, int(NUM_OF_JOINT_MOTOR)):
         node = Node(
             package=pkg_name,
-            namespace=f"elevation_joint_{i+1}",
+            namespace=f"elevation_joint_motor_{i + 1}",
             executable="joint_motor_driver_node",
             # name="joint_motor_driver_node",
             parameters=[

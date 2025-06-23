@@ -8,6 +8,7 @@
 #include <memory>
 #include <chrono>
 #include <iterator>
+#include <atomic>
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -47,8 +48,7 @@ public:
 
   void init_cb(void);
   void base_status_cb(void);
-  void pid_config_cb(void);
-  void lim_config_cb(void);
+  void config_cb(void);
 
   void pub_status_cb(void);
 
@@ -71,12 +71,14 @@ public:
 
 private:
   std::mutex mutex_;
+
+  std::atomic<uint8_t> heartbeat_{0};
+  std::atomic<bool> is_disconnected_{true};
   
   uint8_t can_id_;
   float gear_ratio_;
 
   MotorStatus status_{};
-  // MotorInitState state_;
 
   rclcpp::CallbackGroup::SharedPtr timer_cbg_;
   rclcpp::CallbackGroup::SharedPtr can_sub_cbg_;
@@ -85,8 +87,7 @@ private:
 
   rclcpp::TimerBase::SharedPtr init_timer_;
   rclcpp::TimerBase::SharedPtr base_status_timer_;
-  rclcpp::TimerBase::SharedPtr pid_config_timer_;
-  rclcpp::TimerBase::SharedPtr lim_config_timer_;
+  rclcpp::TimerBase::SharedPtr config_timer_;
   rclcpp::TimerBase::SharedPtr pub_status_timer_;
 
   rclcpp::Publisher<Frame>::SharedPtr frames_pub_;
@@ -98,6 +99,8 @@ private:
   rclcpp::Subscription<Float32>::SharedPtr deg_rotate_sub_;
 
   rclcpp::Service<ControlCommand>::SharedPtr ctrl_cmd_srv_;
+
+  static constexpr uint8_t NO_CAN_FRAME_SEC = 5;
 
   static constexpr float ENCODER_RESOLUTION = 262144.0; // 18-bit encoder
   static constexpr float VELOCITY_SCALE = 100.0;

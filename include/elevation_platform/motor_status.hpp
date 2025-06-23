@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstring>
+#include <atomic>
 
 class MotorStatus 
 {
@@ -13,56 +14,56 @@ public:
     memset(this, 0, sizeof(MotorStatus));
   }
 
-  uint8_t operation_mode;
+  std::atomic<uint8_t> operation_mode{0};
 
-  float current_degree;
+  std::atomic<float> current_degree{0.0};
 
-  float current;
-  float target_current;
-  float velocity;
-  float target_velocity;
-  uint32_t position;
-  uint32_t target_position;
+  std::atomic<float> current{0.0};
+  std::atomic<float> target_current{0.0};
+  std::atomic<float> velocity{0.0};
+  std::atomic<float> target_velocity{0.0};
+  std::atomic<uint32_t> position{0};
+  std::atomic<uint32_t> target_position{0};
 
-  uint32_t position_offset;
+  std::atomic<uint32_t> position_offset{0};
   
   // Error information
-  uint32_t error_status;
+  std::atomic<uint32_t> error_status{0};
   
   // PID control parameters
-  float position_p;
-  float position_i;
-  float position_d; 
-  float velocity_p;
-  float velocity_i;
-  float velocity_d;
-  float current_p;
-  float current_i;
-  float current_d; 
+  std::atomic<float> position_p{0.0};
+  std::atomic<float> position_i{0.0};
+  std::atomic<float> position_d{0.0}; 
+  std::atomic<float> velocity_p{0.0};
+  std::atomic<float> velocity_i{0.0};
+  std::atomic<float> velocity_d{0.0};
+  std::atomic<float> current_p{0.0};
+  std::atomic<float> current_i{0.0};
+  std::atomic<float> current_d{0.0}; 
 
   // Power information
-  float bus_voltage;
-  float encoder_voltage;
-  float encoder_status;
-  float motor_temp;
-  float board_temp;
+  std::atomic<float> bus_voltage{0.0};
+  std::atomic<float> encoder_voltage{0.0};
+  std::atomic<float> encoder_status{0.0};
+  std::atomic<float> motor_temp{0.0};
+  std::atomic<float> board_temp{0.0};
   
   // Current limits
-  float max_current_abs;
-  float max_forward_current;
-  float min_backward_current;
+  std::atomic<float> max_current_abs{0.0};
+  std::atomic<float> max_forward_current{0.0};
+  std::atomic<float> min_backward_current{0.0};
   
   // Acceleration limits
-  float max_forward_accel;
-  float min_backward_accel;
+  std::atomic<float> max_forward_accel{0.0};
+  std::atomic<float> min_backward_accel{0.0};
   
   // Velocity limits
-  float max_forward_velocity;
-  float min_backward_velocity;
+  std::atomic<float> max_forward_velocity{0.0};
+  std::atomic<float> min_backward_velocity{0.0};
   
   // Position limits
-  uint32_t max_forward_position;
-  uint32_t min_backward_position;
+  std::atomic<uint32_t> max_forward_position{0};
+  std::atomic<uint32_t> min_backward_position{0};
 
   // Utility methods
   bool has_errors() const 

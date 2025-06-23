@@ -65,7 +65,7 @@ enum MotorCommand : uint8_t
   SET_CURRENT_MODE     = 0x1C,
   SET_VELOCITY_MODE    = 0x1D,
   SET_POSITION_MODE    = 0x1E,
-  MOTOR_STOP           = 0x02,
+  MOTOR_HALT           = 0x02,
 
   // Combined Set+Get Commands
   SET_CURRENT_GET_CSP  = 0x42,

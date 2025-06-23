@@ -2,7 +2,7 @@ elevation_platform_node:
   ros__parameters:
     sim: False
 
-/elevation_joint_1/joint_motor_driver_node:
+/elevation_joint_motor1/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x60
     gear_ratio: 101.0
@@ -20,9 +20,9 @@ elevation_platform_node:
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: -10.0 # degree/s
+    min_backward_velocity: -10.0 # degree/s
 
-/elevation_joint_2/joint_motor_driver_node:
+/elevation_joint_motor2/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x61
     gear_ratio: 101.0
@@ -40,9 +40,9 @@ elevation_platform_node:
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: -10.0 # degree/s
+    min_backward_velocity: -10.0 # degree/s
 
-/elevation_joint_3/joint_motor_driver_node:
+/elevation_joint_motor3/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x62
     gear_ratio: 101.0
@@ -60,9 +60,9 @@ elevation_platform_node:
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: -10.0 # degree/s
+    min_backward_velocity: -10.0 # degree/s
 
-/elevation_joint_4/joint_motor_driver_node:
+/elevation_joint_motor4/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x63
     gear_ratio: 88.0
@@ -80,4 +80,4 @@ elevation_platform_node:
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: -10.0 # degree/s
+    min_backward_velocity: -10.0 # degree/s
