@@ -22,9 +22,9 @@ namespace CommandGroups
   };
 
   constexpr uint8_t GET_PID_CMDS[] = {
-    GET_VELOCITY_P, GET_VELOCITY_I, GET_VELOCITY_D,
-    GET_POSITION_P, GET_POSITION_I, GET_POSITION_D,
-    GET_CURRENT_P, GET_CURRENT_I, GET_CURRENT_D
+    GET_VELOCITY_P, GET_VELOCITY_I, 
+    GET_POSITION_P,                 GET_POSITION_D,
+    // GET_CURRENT_P, GET_CURRENT_I, GET_CURRENT_D
   };
 
   constexpr uint8_t GET_LIMIT_CMDS[] = {

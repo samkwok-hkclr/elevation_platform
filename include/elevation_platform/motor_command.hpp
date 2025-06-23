@@ -36,9 +36,6 @@ enum MotorCommand : uint8_t
   GET_POSITION_P        = 0x12,
   GET_POSITION_I        = 0x34,
   GET_POSITION_D        = 0x13,
-  GET_CURRENT_P         = 0x61,
-  GET_CURRENT_I         = 0x62,
-  GET_CURRENT_D         = 0x63,
 
   // Limit Settings Commands
   GET_MAX_CURRENT       = 0x37,
@@ -86,12 +83,12 @@ enum MotorCommand : uint8_t
   SET_MIN_POSITION     = 0x27,
 
   // PID Configuration
-  SET_VELOCITY_P       = 0x29,
-  SET_VELOCITY_I       = 0x2A,
-  SET_VELOCITY_D       = 0x2B,
   SET_POSITION_P       = 0x2B,
   SET_POSITION_I       = 0x2C,
   SET_POSITION_D       = 0x2D,
+  SET_VELOCITY_P       = 0x29,
+  SET_VELOCITY_I       = 0x2A,
+  SET_VELOCITY_D       = 0x2B,
 
   // System Configuration
   SET_CAN_ID           = 0x2E,

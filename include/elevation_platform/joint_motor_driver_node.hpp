@@ -12,6 +12,7 @@
 #include "rclcpp/rclcpp.hpp"
 
 #include "std_msgs/msg/empty.hpp"
+#include "std_msgs/msg/float32.hpp"
 #include "can_msgs/msg/frame.hpp"
 
 #include "elevation_platform_msgs/msg/joint_motor_status.hpp"
@@ -31,6 +32,7 @@ using std::placeholders::_3;
 class JointMotorDriverNode : public rclcpp::Node
 {
   using Empty = std_msgs::msg::Empty;
+  using Float32 = std_msgs::msg::Float32;
   using Frame = can_msgs::msg::Frame;
 
   using JointMotorStatus = elevation_platform_msgs::msg::JointMotorStatus;
@@ -41,7 +43,7 @@ public:
   ~JointMotorDriverNode();
 
   Frame create_one_byte_frame(const uint8_t command);
-  Frame create_five_bytes_frame(const uint8_t command, const int32_t value);
+  Frame create_five_bytes_frame(const uint8_t command, const uint32_t value);
 
   void init_cb(void);
   void base_status_cb(void);
@@ -60,6 +62,8 @@ public:
 
   void can_frame_cb(const Frame::SharedPtr msg);
   void halt_cb(const Empty::SharedPtr msg);
+  void clear_cb(const Empty::SharedPtr msg);
+  void deg_rotate_cb(const Float32::SharedPtr msg);
 
   void ctrl_cmd_handle(
     const std::shared_ptr<ControlCommand::Request> request, 
@@ -71,14 +75,8 @@ private:
   uint8_t can_id_;
   float gear_ratio_;
 
-  MotorStatus status_;
-  // uint32_t position_offset_;
-  // int32_t max_current_;
-  // int32_t min_current_;
-
+  MotorStatus status_{};
   // MotorInitState state_;
-
-  // JointMotorStatus status_msg_;
 
   rclcpp::CallbackGroup::SharedPtr timer_cbg_;
   rclcpp::CallbackGroup::SharedPtr can_sub_cbg_;
@@ -96,6 +94,8 @@ private:
 
   rclcpp::Subscription<Frame>::SharedPtr frames_sub_;
   rclcpp::Subscription<Empty>::SharedPtr halt_sub_;
+  rclcpp::Subscription<Empty>::SharedPtr clear_sub_;
+  rclcpp::Subscription<Float32>::SharedPtr deg_rotate_sub_;
 
   rclcpp::Service<ControlCommand>::SharedPtr ctrl_cmd_srv_;
 

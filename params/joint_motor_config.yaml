@@ -6,50 +6,78 @@ elevation_platform_node:
   ros__parameters:
     can_id: 0x60
     gear_ratio: 101.0
-    position_shift: 0x0
+    position_offset: 0x0
 
-    max_current: 5000 # mA FIXME
-    min_current: 5000 # mA FIXME
+    position_p: 800
+    position_i: 0 # not used
+    position_d: 500 
+    velocity_p: 1100
+    velocity_i: 1000
+    velocity_d: 0  # not used
+
+    max_forward_current: 6000 # mA
+    min_backward_current: -6000 # mA
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: 10.0 # degree/s
+    max_backward_velocity: -10.0 # degree/s
 
 /elevation_joint_2/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x61
     gear_ratio: 101.0
-    position_shift: 0x0
+    position_offset: 0x0
 
-    max_current: 5000 # mA FIXME
-    min_current: 5000 # mA FIXME
+    position_p: 800
+    position_i: 0 # not used
+    position_d: 500 
+    velocity_p: 1100
+    velocity_i: 1000
+    velocity_d: 0  # not used
+
+    max_forward_current: 6000 # mA
+    min_backward_current: -6000 # mA
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: 10.0 # degree/s
+    max_backward_velocity: -10.0 # degree/s
 
 /elevation_joint_3/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x62
     gear_ratio: 101.0
-    position_shift: 0x0
+    position_offset: 0x0
 
-    max_current: 5000 # mA FIXME
-    min_current: 5000 # mA FIXME
+    position_p: 800
+    position_i: 0 # not used
+    position_d: 500 
+    velocity_p: 1100
+    velocity_i: 1000
+    velocity_d: 0  # not used
+
+    max_forward_current: 6000 # mA 
+    min_backward_current: -6000 # mA 
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: 10.0 # degree/s
+    max_backward_velocity: -10.0 # degree/s
 
 /elevation_joint_4/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x63
     gear_ratio: 88.0
-    position_shift: 0x0
+    position_offset: 0x0
 
-    max_current: 5000 # mA FIXME
-    min_current: 5000 # mA FIXME
+    position_p: 800
+    position_i: 0 # not used
+    position_d: 500 
+    velocity_p: 1100
+    velocity_i: 1000
+    velocity_d: 0  # not used
+    
+    max_forward_current: 6000 # mA 
+    min_backward_current: -6000 # mA 
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
     max_forward_velocity: 10.0 # degree/s
-    max_backward_velocity: 10.0 # degree/s
+    max_backward_velocity: -10.0 # degree/s
