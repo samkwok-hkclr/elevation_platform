@@ -9,12 +9,16 @@ JointMotorDriverNode::JointMotorDriverNode(
   declare_parameter<int32_t>("position_offset", 0);
   declare_parameter<int32_t>("max_current", 0);
   declare_parameter<int32_t>("min_current", 0);
+  declare_parameter<int32_t>("max_forward_velocity", 0);
+  declare_parameter<int32_t>("max_backward_velocity", 0);
 
   get_parameter("can_id", can_id_);
   get_parameter("gear_ratio", gear_ratio_);
-  get_parameter("position_offset", position_offset_);
-  get_parameter("max_current", max_current_);
-  get_parameter("min_current", min_current_);
+  status_.set_position_offset(get_parameter("position_offset").as_int());
+  status_.set_max_forward_current(get_parameter("max_current").as_double());
+  status_.set_min_backward_current(get_parameter("min_current").as_double());
+  status_.set_max_forward_velocity(get_parameter("max_forward_velocity").as_double());
+  status_.set_min_backward_velocity(get_parameter("max_backward_velocity").as_double());
 
   if (can_id_ == 0 || can_id_ > 0x7F)
   {
@@ -30,9 +34,6 @@ JointMotorDriverNode::JointMotorDriverNode(
     return;
   }
 
-  status_msg_.can_id = can_id_;
-  status_msg_.gear_ratio = gear_ratio_;
-
   timer_cbg_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
   can_sub_cbg_ = create_callback_group(rclcpp::CallbackGroupType::Reentrant);
   emergency_sub_cbg_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
@@ -43,7 +44,7 @@ JointMotorDriverNode::JointMotorDriverNode(
   rclcpp::SubscriptionOptions halt_sub_options;
   halt_sub_options.callback_group = emergency_sub_cbg_;
 
-  // init_timer_ = create_wall_timer(200ms, std::bind(&JointMotorDriverNode::init_cb, this), timer_cbg_);
+  init_timer_ = create_wall_timer(500ms, std::bind(&JointMotorDriverNode::init_cb, this), timer_cbg_);
   base_status_timer_ = create_wall_timer(200ms, std::bind(&JointMotorDriverNode::base_status_cb, this), timer_cbg_);
   pid_config_timer_ = create_wall_timer(1000ms, std::bind(&JointMotorDriverNode::pid_config_cb, this), timer_cbg_);
   lim_config_timer_ = create_wall_timer(1000ms, std::bind(&JointMotorDriverNode::lim_config_cb, this), timer_cbg_);
@@ -108,10 +109,12 @@ can_msgs::msg::Frame JointMotorDriverNode::create_five_bytes_frame(const uint8_t
     // TBD
     break;
   case MotorCommand::SET_POSITION_MODE:
+    // compose_bytes(&msg.data[1], value);
+    break;
+  case MotorCommand::SET_MAX_VELOCITY:
+  case MotorCommand::SET_MIN_VELOCITY:
     compose_bytes(&msg.data[1], value);
     break;
-  // case XXX:
-  //   break;
   default:
     RCLCPP_WARN(get_logger(), "Unhandled CMD: 0x%02X", static_cast<int>(command));
     break;
@@ -122,15 +125,16 @@ can_msgs::msg::Frame JointMotorDriverNode::create_five_bytes_frame(const uint8_t
 
 void JointMotorDriverNode::init_cb(void)
 {
-  if (!state_.is_pos_offset_initialized())
-  {
-    frames_pub_->publish(create_five_bytes_frame(MotorCommand::SET_POSITION_OFFSET, position_offset_));
-  }
-  if (state_.all_initialized())
-  {
-    init_timer_->cancel();
-    RCLCPP_WARN(get_logger(), "Joint Motor [CAN-ID: 0x%02X] Initialized.", static_cast<int>(can_id_));
-  }
+  frames_pub_->publish(
+    create_five_bytes_frame(
+      MotorCommand::SET_MAX_VELOCITY, 
+      velocity_inverse_convention(status_.max_forward_velocity())));
+  frames_pub_->publish(
+    create_five_bytes_frame(
+      MotorCommand::SET_MIN_VELOCITY, 
+      velocity_inverse_convention(status_.min_backward_velocity())));
+
+  init_timer_->cancel();
 }
 
 void JointMotorDriverNode::base_status_cb(void)
@@ -159,10 +163,15 @@ void JointMotorDriverNode::lim_config_cb(void)
 
 void JointMotorDriverNode::pub_status_cb(void)
 {
+  JointMotorStatus msg;
+  msg.header.stamp = get_clock()->now();
+
   const std::lock_guard<std::mutex> lock(mutex_);
 
-  status_msg_.header.stamp = get_clock()->now();
-  status_pub_->publish(status_msg_);
+  msg.can_id = can_id_;
+  msg.gear_ratio = gear_ratio_;
+  
+  status_pub_->publish(msg);
 }
 
 void JointMotorDriverNode::ctrl_cmd_handle(
@@ -184,50 +193,50 @@ void JointMotorDriverNode::can_frame_cb(const Frame::SharedPtr msg)
   switch (msg->data[0])
   {
   case MotorCommand::GET_MODE:
-    /* code */
+    status_.set_operation_mode(parse_bytes(&msg->data[1]));
     break;
   case MotorCommand::GET_CURRENT:
-    status_msg_.current = parse_bytes(&msg->data[1]);
+    status_.set_current(parse_bytes(&msg->data[1]));
     break;
   case MotorCommand::GET_TARGET_CURRENT:
-    status_msg_.target_current = parse_bytes(&msg->data[1]);
+    status_.set_target_current(parse_bytes(&msg->data[1]));
     break;
   case MotorCommand::GET_VELOCITY:
-    status_msg_.velocity = velocity_convention(parse_bytes(&msg->data[1]));
+    status_.set_velocity(velocity_convention(parse_bytes(&msg->data[1])));
     break;
   case MotorCommand::GET_TARGET_VELOCITY:
-    status_msg_.target_velocity = velocity_convention(parse_bytes(&msg->data[1]));
+    status_.set_target_velocity(velocity_convention(parse_bytes(&msg->data[1])));
     break;
   case MotorCommand::GET_POSITION:
   {
-    int32_t tmp = parse_bytes(&msg->data[1]);
-    status_msg_.current_degree = position_convention(tmp);
-    status_msg_.position = tmp;
+    // int32_t tmp = parse_bytes(&msg->data[1]);
+    // status_msg_.current_degree = position_convention(tmp);
+    // status_msg_.position = tmp;
   }
     break;
   case MotorCommand::GET_TARGET_POSITION:
-    status_msg_.target_position = parse_bytes(&msg->data[1]);
+    status_.set_target_position(parse_bytes(&msg->data[1]));
     break;
   case MotorCommand::GET_ERROR_STATUS:
     /* code */
     break;
   case MotorCommand::GET_BUS_VOLTAGE:
-    status_msg_.bus_voltage = parse_bytes(&msg->data[1]);
+    status_.set_bus_voltage(parse_bytes(&msg->data[1]));
     break;
   case MotorCommand::GET_MOTOR_TEMP:
-    status_msg_.motor_temp = parse_bytes(&msg->data[1]);
+    status_.set_motor_temp(parse_bytes(&msg->data[1]));
     break;
   case MotorCommand::GET_BOARD_TEMP:
-    status_msg_.board_temp = parse_bytes(&msg->data[1]);
+    status_.set_board_temp(parse_bytes(&msg->data[1]));
     break;
   case MotorCommand::GET_ENCODER_VOLTAGE:
-    status_msg_.encoder_voltage = parse_bytes(&msg->data[1]);
+    // status_msg_.encoder_voltage = parse_bytes(&msg->data[1]);
     break;
   case MotorCommand::GET_ENCODER_STATUS:
-    status_msg_.encoder_status = parse_bytes(&msg->data[1]);
+    // status_msg_.encoder_status = parse_bytes(&msg->data[1]);
     break;
   case MotorCommand::SET_POSITION_OFFSET:
-    state_.set_pos_offset_initialized(true);
+    // state_.set_pos_offset_initialized(true);
     break;
   // case XXXX:
   //   break;
@@ -239,8 +248,8 @@ void JointMotorDriverNode::can_frame_cb(const Frame::SharedPtr msg)
 
 void JointMotorDriverNode::halt_cb(const Empty::SharedPtr msg)
 {
-  (void) msg;
   frames_pub_->publish(create_one_byte_frame(MotorCommand::MOTOR_STOP));
+  (void) msg;
 
   RCLCPP_WARN(get_logger(), "Joint Motor [CAN-ID: 0x%02X] halted", static_cast<int>(can_id_));
 }

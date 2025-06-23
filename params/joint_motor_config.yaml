@@ -12,8 +12,8 @@ elevation_platform_node:
     min_current: 5000 # mA FIXME
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
-    max_forward_velocity: 5.0 # FIXME
-    max_backward_velocity: 5.0 # FIXME
+    max_forward_velocity: 10.0 # degree/s
+    max_backward_velocity: 10.0 # degree/s
 
 /elevation_joint_2/joint_motor_driver_node:
   ros__parameters:
@@ -25,8 +25,8 @@ elevation_platform_node:
     min_current: 5000 # mA FIXME
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
-    max_forward_velocity: 5.0 # FIXME
-    max_backward_velocity: 5.0 # FIXME
+    max_forward_velocity: 10.0 # degree/s
+    max_backward_velocity: 10.0 # degree/s
 
 /elevation_joint_3/joint_motor_driver_node:
   ros__parameters:
@@ -38,8 +38,8 @@ elevation_platform_node:
     min_current: 5000 # mA FIXME
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
-    max_forward_velocity: 5.0 # FIXME
-    max_backward_velocity: 5.0 # FIXME
+    max_forward_velocity: 10.0 # degree/s
+    max_backward_velocity: 10.0 # degree/s
 
 /elevation_joint_4/joint_motor_driver_node:
   ros__parameters:
@@ -51,5 +51,5 @@ elevation_platform_node:
     min_current: 5000 # mA FIXME
     max_forward_acceleration: 5.0 # FIXME
     max_backward_acceleration: 5.0 # FIXME
-    max_forward_velocity: 5.0 # FIXME
-    max_backward_velocity: 5.0 # FIXME
+    max_forward_velocity: 10.0 # degree/s
+    max_backward_velocity: 10.0 # degree/s

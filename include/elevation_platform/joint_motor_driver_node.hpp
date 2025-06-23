@@ -20,6 +20,7 @@
 #include "motor_command.hpp"
 #include "command_group.hpp"
 #include "motor_init_state.hpp"
+#include "motor_status.hpp"
 
 using namespace std::chrono_literals;
 
@@ -69,13 +70,15 @@ private:
   
   uint8_t can_id_;
   float gear_ratio_;
-  uint32_t position_offset_;
-  int32_t max_current_;
-  int32_t min_current_;
 
-  MotorInitState state_;
+  MotorStatus status_;
+  // uint32_t position_offset_;
+  // int32_t max_current_;
+  // int32_t min_current_;
 
-  JointMotorStatus status_msg_;
+  // MotorInitState state_;
+
+  // JointMotorStatus status_msg_;
 
   rclcpp::CallbackGroup::SharedPtr timer_cbg_;
   rclcpp::CallbackGroup::SharedPtr can_sub_cbg_;
