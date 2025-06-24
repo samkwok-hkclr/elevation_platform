@@ -15,8 +15,8 @@ JointMotorDriverNode::JointMotorDriverNode(
 
   declare_parameter<int32_t>("max_forward_current", 0);
   declare_parameter<int32_t>("min_backward_current", 0);
-  declare_parameter<double>("max_forward_velocity", 0);
-  declare_parameter<double>("min_backward_velocity", 0);
+  declare_parameter<double>("max_forward_velocity", 0.0);
+  declare_parameter<double>("min_backward_velocity", 0.0);
 
   get_parameter("can_id", can_id_);
   get_parameter("gear_ratio", gear_ratio_);
@@ -223,15 +223,12 @@ void JointMotorDriverNode::config_cb(void)
     frames_pub_->publish(create_one_byte_frame(cmd));
   }
 
-  if (++heartbeat_ > NO_CAN_FRAME_SEC)
-  {
-    is_disconnected_.store(true);
-  }
+  is_disconnected_.store(++heartbeat_ > NO_CAN_FRAME_SEC ? true : false);
 }
 
 void JointMotorDriverNode::pub_status_cb(void)
 {
-  JointMotorStatus msg(rosidl_runtime_cpp::MessageInitialization::ZERO);
+  JointMotorStatus msg;
   msg.header.stamp = get_clock()->now();
 
   std::unique_lock<std::mutex> lock(mutex_, std::defer_lock);
@@ -269,6 +266,8 @@ void JointMotorDriverNode::pub_status_cb(void)
   msg.min_backward_velocity = status_.min_backward_velocity;
   msg.max_forward_position  = status_.max_forward_position;
   msg.min_backward_position = status_.min_backward_position;
+  msg.max_forward_current   = status_.max_forward_current;
+  msg.min_backward_current  = status_.min_backward_current;
 
   msg.position_p            = status_.position_p;
   msg.position_i            = status_.position_i;
@@ -279,6 +278,9 @@ void JointMotorDriverNode::pub_status_cb(void)
   msg.current_p             = status_.current_p;
   msg.current_i             = status_.current_i;
   msg.current_d             = status_.current_d;
+
+  RCLCPP_DEBUG(get_logger(), "max_forward_current: 0x%02X", static_cast<int>(msg.max_forward_current));
+  RCLCPP_DEBUG(get_logger(), "min_backward_current: 0x%02X", static_cast<int>(msg.min_backward_current));
 
   status_pub_->publish(msg);
 }
@@ -355,22 +357,22 @@ void JointMotorDriverNode::can_frame_cb(const Frame::SharedPtr msg)
     status_.position_offset = data;
     break;
   case MotorCommand::GET_VELOCITY_P:
-    status_.velocity_p = data;
+    status_.velocity_p = data & 0x7FF;
     break;
   case MotorCommand::GET_VELOCITY_I:
-    status_.velocity_i = data;
+    status_.velocity_i = data & 0x7FF;
     break;
   case MotorCommand::GET_VELOCITY_D:
-    status_.velocity_d = data;
+    status_.velocity_d = data & 0x7FF;
     break;
   case MotorCommand::GET_POSITION_P:
-    status_.position_p = data;
+    status_.position_p = data & 0x7FF;
     break;
   case MotorCommand::GET_POSITION_I:
-    status_.position_i = data;
+    status_.position_i = data & 0x7FF;
     break;
   case MotorCommand::GET_POSITION_D:
-    status_.position_d = data;
+    status_.position_d = data & 0x7FF;
     break;
   case MotorCommand::GET_MAX_CURRENT:
     status_.max_current_abs = data;
@@ -388,10 +390,10 @@ void JointMotorDriverNode::can_frame_cb(const Frame::SharedPtr msg)
     status_.min_backward_accel = data;
     break;
   case MotorCommand::GET_MAX_VELOCITY:
-    status_.max_forward_velocity = data;
+    status_.max_forward_velocity = velocity_convention(data);
     break;
   case MotorCommand::GET_MIN_VELOCITY:
-    status_.min_backward_velocity = data;
+    status_.min_backward_velocity = velocity_convention(data);
     break;
   case MotorCommand::GET_MAX_POSITION:
     status_.max_forward_position = static_cast<uint32_t>(data);
@@ -423,16 +425,16 @@ void JointMotorDriverNode::can_frame_cb(const Frame::SharedPtr msg)
 
 void JointMotorDriverNode::halt_cb(const Empty::SharedPtr msg)
 {
-  frames_pub_->publish(create_one_byte_frame(MotorCommand::MOTOR_HALT));
   (void) msg;
+  frames_pub_->publish(create_one_byte_frame(MotorCommand::MOTOR_HALT));
 
   RCLCPP_WARN(get_logger(), "Joint Motor [CAN-ID: 0x%02X] halted", static_cast<int>(can_id_));
 }
 
 void JointMotorDriverNode::clear_cb(const Empty::SharedPtr msg)
 {
-  frames_pub_->publish(create_one_byte_frame(MotorCommand::CLEAR_ERRORS));
   (void) msg;
+  frames_pub_->publish(create_one_byte_frame(MotorCommand::CLEAR_ERRORS));
 
   RCLCPP_WARN(get_logger(), "Joint Motor [CAN-ID: 0x%02X] clear error", static_cast<int>(can_id_));
 }

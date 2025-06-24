@@ -21,7 +21,6 @@
 
 #include "motor_command.hpp"
 #include "command_group.hpp"
-#include "motor_init_state.hpp"
 #include "motor_status.hpp"
 
 using namespace std::chrono_literals;

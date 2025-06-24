@@ -4,7 +4,7 @@ ElevationPlatformNode::ElevationPlatformNode(
 	const rclcpp::NodeOptions& options)
 : Node("elevation_platform_node", options)
 {
-
+  RCLCPP_INFO(get_logger(), "Elevation Platform Node is up.");
 }
 
 

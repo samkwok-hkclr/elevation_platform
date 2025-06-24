@@ -51,4 +51,17 @@ def generate_launch_description():
         )
         ld.add_action(node)
 
+    elev_plf_node = Node(
+        package=pkg_name,
+        executable="elevation_platform_node",
+        parameters=[
+            params_file,
+        ],
+        respawn=use_respawn,
+        respawn_delay=3.0,
+        output="screen",
+    )
+
+    ld.add_action(elev_plf_node)
+
     return ld
