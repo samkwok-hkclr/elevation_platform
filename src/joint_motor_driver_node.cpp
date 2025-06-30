@@ -451,7 +451,7 @@ void JointMotorDriverNode::deg_rotate_cb(const Float32::SharedPtr msg)
     return;
   }
   
-  uint32_t rotation_steps = static_cast<uint32_t>(ENCODER_RESOLUTION * fabs(msg->data) / DEGREES_PER_REV);
+  uint32_t rotation_steps = static_cast<uint32_t>(ENCODER_RESOLUTION * std::abs(msg->data) / DEGREES_PER_REV);
   uint32_t target_position = 0;
   
   uint32_t current_pos = status_.position.load(std::memory_order_seq_cst);
