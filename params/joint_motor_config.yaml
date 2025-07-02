@@ -65,7 +65,7 @@ elevation_platform_node:
 /elevation_joint_motor_4/joint_motor_driver_node:
   ros__parameters:
     can_id: 0x63
-    gear_ratio: 88.0
+    gear_ratio: 101.0
     position_offset: 0x0
 
     position_p: 800
