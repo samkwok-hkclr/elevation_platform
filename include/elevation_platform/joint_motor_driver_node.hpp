@@ -14,6 +14,8 @@
 
 #include "std_msgs/msg/empty.hpp"
 #include "std_msgs/msg/float32.hpp"
+#include "std_srvs/srv/trigger.hpp"
+
 #include "can_msgs/msg/frame.hpp"
 
 #include "elevation_platform_msgs/msg/joint_motor_status.hpp"
@@ -22,6 +24,7 @@
 #include "motor_command.hpp"
 #include "command_group.hpp"
 #include "motor_status.hpp"
+#include "motor_mode.hpp"
 
 using namespace std::chrono_literals;
 
@@ -33,6 +36,8 @@ class JointMotorDriverNode : public rclcpp::Node
 {
   using Empty = std_msgs::msg::Empty;
   using Float32 = std_msgs::msg::Float32;
+  using Trigger = std_srvs::srv::Trigger;
+
   using Frame = can_msgs::msg::Frame;
 
   using JointMotorStatus = elevation_platform_msgs::msg::JointMotorStatus;
@@ -51,8 +56,12 @@ public:
 
   void pub_status_cb(void);
 
+  void auto_halt_cb(void);
+
   int32_t parse_bytes(const uint8_t *val_ptr);
   void compose_bytes(uint8_t *val_ptr, const int32_t val);
+
+  void send_halt_cmd(void);
 
   float velocity_convention(int32_t val) const;
   int32_t velocity_inverse_convention(float val) const;
@@ -63,6 +72,7 @@ public:
   void halt_cb(const Empty::SharedPtr msg);
   void clear_cb(const Empty::SharedPtr msg);
   void deg_rotate_cb(const Float32::SharedPtr msg);
+  void init_rotate_cb(const Empty::SharedPtr msg);
 
   void ctrl_cmd_handle(
     const std::shared_ptr<ControlCommand::Request> request, 
@@ -73,6 +83,11 @@ private:
 
   std::atomic<uint8_t> heartbeat_{0};
   std::atomic<bool> is_disconnected_{true};
+
+  std::atomic<bool> is_rotating_{false};
+  std::atomic<uint32_t> last_position_{0};
+  std::atomic<uint8_t> no_rotation_times_{0};
+  uint8_t auto_halt_timeout_;
   
   uint8_t can_id_;
   float gear_ratio_;
@@ -88,6 +103,7 @@ private:
   rclcpp::TimerBase::SharedPtr base_status_timer_;
   rclcpp::TimerBase::SharedPtr config_timer_;
   rclcpp::TimerBase::SharedPtr pub_status_timer_;
+  rclcpp::TimerBase::SharedPtr auto_halt_timer_;
 
   rclcpp::Publisher<Frame>::SharedPtr frames_pub_;
   rclcpp::Publisher<JointMotorStatus>::SharedPtr status_pub_;
@@ -96,14 +112,19 @@ private:
   rclcpp::Subscription<Empty>::SharedPtr halt_sub_;
   rclcpp::Subscription<Empty>::SharedPtr clear_sub_;
   rclcpp::Subscription<Float32>::SharedPtr deg_rotate_sub_;
+  rclcpp::Subscription<Empty>::SharedPtr init_rotate_sub_;
 
   rclcpp::Service<ControlCommand>::SharedPtr ctrl_cmd_srv_;
 
   static constexpr uint8_t NO_CAN_FRAME_SEC = 5;
+  static constexpr uint32_t ZERO_POSITION = 0;
 
   static constexpr float ENCODER_RESOLUTION = 262144.0; // 18-bit encoder
   static constexpr float VELOCITY_SCALE = 100.0;
   static constexpr float DEGREES_PER_REV = 360.0;
+
+  static constexpr uint32_t DEGREE_THRESHOLD = 0.5;
+  static constexpr uint32_t MOVING_THRESHOLD = 16; // steps
 };
 
 

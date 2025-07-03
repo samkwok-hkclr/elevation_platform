@@ -19,6 +19,8 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(can_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 find_package(elevation_platform_msgs REQUIRED)
 
@@ -46,6 +48,8 @@ target_include_directories(joint_motor_driver_node PUBLIC
 )
 ament_target_dependencies(joint_motor_driver_node
   rclcpp
+  std_msgs
+  std_srvs
   can_msgs
 
   elevation_platform_msgs
