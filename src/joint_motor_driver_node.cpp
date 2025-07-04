@@ -116,7 +116,7 @@ JointMotorDriverNode::~JointMotorDriverNode()
 {
   if (rclcpp::ok()) 
   {
-    frames_pub_->publish(create_one_byte_frame(MotorCommand::MOTOR_HALT));
+    send_halt_cmd();
   }
 }
 
